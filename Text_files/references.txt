@@ -1,0 +1,31 @@
+Resources referenced in pursuit of this project:
+
+Code, lectures and resources from Udacity lessons/problem sets 3, 4, 5 and 6
+
+https://docs.python.org/2/howto/regex.html 
+https://docs.python.org/3/library/xml.etree.elementtree.html#building-xml-documents
+https://discussions.udacity.com/t/lesson-6-5-update-name-method/37264/5
+https://discussions.udacity.com/t/final-project-update-street-names/43897/2
+http://www.diveintopython.net/regular_expressions/phone_numbers.html
+http://stackoverflow.com/questions/34283178/typeerror-a-bytes-like-object-is-required-not-str-in-python-and-csv
+
+https://docs.mongodb.org/getting-started/python/query/
+# https://docs.mongodb.org/manual/reference/operator/aggregation/sum/
+# http://api.mongodb.org/python/current/tutorial.html
+# https://docs.mongodb.org/manual/reference/operator/query/exists/
+# https://docs.mongodb.org/manual/reference/method/js-collection/
+# https://docs.mongodb.org/manual/reference/method/db.collection.update/#db.collection.update
+# https://docs.mongodb.org/manual/reference/method/db.collection.update/#update-parameter
+
+
+
+
+Used to get createSample.py working:
+https://docs.python.org/3/library/xml.etree.elementtree.html#building-xml-documents
+#http://stackoverflow.com/questions/34283178/typeerror-a-bytes-like-object-is-required-not-str-in-python-and-csv
+
+On sample.osm: DOES NOT CONTAIN XML DECLARATION. Code supplied by instructors' notes did not work --
+I believe Python 3 does not allow mixing .write(strings) and .write(bytes object) with the 
+open(file, "wb") setting.
+
+note: most links are added as comments in the files they were referenced for, either at the top or near the relevant lines.

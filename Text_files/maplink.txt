@@ -1,0 +1,10 @@
+
+Link to OpenStreetMap section cleaned in this project:
+
+http://www.openstreetmap.org/export#map=12/42.1666/-87.9737
+
+This is a suburban area northwest of Chicago. I chose it because I currently live and work predominantly within the bounds of this map.
+
+(note: these coordinates are slightly off, by a few hundredths of a decimal place, from the dataset used in this project--
+ data was downloaded and then navigated away from before the page link was copied. 
+ The dataset itself should only be very slightly different, and the sample data should be almost identical.)

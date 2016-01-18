@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title> Project 3 Report - OpenStreetMap Datamunge and Json conversion</title>
+	</head>
+	
+	<body>
+		<!-- Student submission is long enough to thoroughly answer the questions asked without giving unnecessary detail.
+			A good general guideline is that your question responses should take about 3-6 pages. -->
+		<div>
+			<h1> Problems Encountered in the Data</h1>
+			<!-- Rubric criteria: Problems encountered in your map
+				Student response describes the challenges encountered while auditing, 
+				fixing and processing the dataset for the area of their choice.
+				Some of the problems encountered during data audit are cleaned programmatically. 
+				Guidelines:
+				Student response shows understanding of the process of auditing, and ways to correct or standardize the data, including dealing with problems specific to the location, e.g. related to language or traditional ways of formatting.
+				Some of the problems encountered during data audit are cleaned programmatically.    -->
+			
+			<p> After downloading and auditing my chosen dataset, I encountered several problems with the data. I will discuss these problems and my approaches below.</p>
+			<h2> Inconsistent Phone Number Format </h2>
+			<p> Although some elements of the data seemed to have been standardized to some extend - for example, amenity type came back with no misspellings and formatted with underscores for spaces - phone numbers were found in +1(800)555-5555, 555.5555, (800)555-5555, etc. I was unable to locate OpenStreetMap's preferred format, so I chose to reformat all in 1.800.555.5555, via simple string replace method.</p>
+			<h2>Street Name vs. Way Name</h2>
+			<p>Searching for 'name' returned not only place names, but the names of streets for way tags. Mispellings were common, and in particular, "St" was used as an abbreviation for both "Street", as in "Main Street", and "Saint", as in "Saint Mary's Church". Specifically for names, I chose to map problematic strings to the corrected solution before entering into json.</p>
+			<h2> Population</h2>
+			<p>After converting population data into integers, a MongoDB query highlighted the possibility for duplicate data. After summing population by township:</p>
+			<p style="color:lightgray;">  > db.buffalogrove.aggregate([
+					{'$match': {'population':{'$exists': 1}}},
+					{'$group': {'_id': '$name', 
+								'total': {'$sum': '$population'}}},
+					{'$sort': {'total': -1}},
+				])
+			</p>
+			<p> Resulted in:</p>
+			<p style="color:lightgray;">  [{'_id': 'Wheeling', 'total': 152039}, {'_id': 'Arlington Heights', 'total': 76031}, {'_id': 'Palatine', 'total': 67396}, {'_id': 'Northbrook', 'total': 34142}, {'_id': 'Highland Park', 'total': 31614}, {'_id': 'Vernon Hills', 'total': 24200}, {'_id': 'Rolling Meadows', 'total': 23682}, {'_id': 'Lake Zurich', 'total': 20386}, {'_id': 'Prospect Heights', 'total': 16244}, {'_id': 'Barrington', 'total': 14743}, {'_id': 'Long Grove', 'total': 8058}, {'_id': 'Hawthorn Woods', 'total': 7752}, {'_id': 'Inverness', 'total': 7434}, {'_id': 'Lincolnshire', 'total': 7333}, {'_id': 'Highwood', 'total': 5471}, {'_id': 'Lake Barrington', 'total': 5035}, {'_id': 'Riverwoods', 'total': 4128}, {'_id': 'Kildeer', 'total': 4065}, {'_id': 'South Barrington', 'total': 3960}, {'_id': 'North Barrington', 'total': 3229}, {'_id': 'Bannockburn', 'total': 1615}, {'_id': 'Indian Creek', 'total': 613}, {'_id': 'Mettawa', 'total': 497}]</p>
+			
+			<p>At first I suspected duplicates, given that the official census data for Wheeling projects its population at ~37,000 in 2010. However, after listing all entries with both 'name' Wheeling and 'population' $exists:</p>
+			<p <p style="color:lightgray;"> db.buffalogrove.aggregate([
+											{'$match': {'name': 'Wheeling',
+													'population':{'$exists':1}}}])</p>
+			<p> Resulting in a single entry with population of 152039, I concluded that the value had mistakenly been entered with an extra 1 at the beginning of the text. All other populations fell between 80,000 and 300,so a population of ~57,000 was a reasonable possibility. The census data I found was collected in 1999, so again, ~57,000 seemed a potentially reasonable number, and as I had no better source to verify or disprove a population of ~57,000, I decided to treat this case as a typo and leave the corrected population of 52039 in its place for the purposes of this project.</p>
+			
+			
+		
+			
+		</div>
+		
+		<div>
+			<h1> Overview of the Data </h1>
+			<!-- Overview of the data
+				Student provides a statistical overview about their chosen dataset, like:
+					size of the file
+					number of unique users
+					number of nodes and ways
+					number of chosen type of nodes, like cafes, shops etc 
+				Guidelines: 
+				Student response provides the statistics about their chosen map area. Dataset is at least 50MB.
+				Student response also includes the MongoDB queries used to obtain the statistics.-->
+			<p>Statistics on the files and dataset:</p>
+			<h3>File Sizes</h3>
+			<ul>
+				<li>buffalogrove.osm 		65mb</li>
+				<li>buffalogrove.osm.json 	68.8mb</li>
+			</ul>
+			<h3>Number of documents</h3>
+			<ul>
+				<li style="color:lightgray;"> > db.buffalogrove.find().count()</li>
+				<li>321512 </li>
+			</ul>
+			<h3>Number of nodes </h3>
+			<ul>
+				<li style="color:lightgray;"> > db.buffalogrove.find({"type": "node"}).count() </li>
+				<li> 294343</li>
+			</ul>
+			<h3>Number of ways </h3>
+			<ul>
+				<li style="color:lightgray;"> > db.buffalogrove.find({"type": "way"}).count() </li>
+				<li> 27169</li>
+			</ul>
+			<h3>Unique Users</h3>
+			<ul>
+				<li style="color:lightgray;"> 
+					def process_users(filename): #changed from process_map to _users to avoid conflict
+						users = set()
+						for event, element in ET.iterparse(filename):
+							if 'uid' in element.attrib:
+								uid = get_user(element)
+								if uid not in users:
+									users.add(uid)
+								else: 
+									pass
+						return users</li>
+				<li> 378 </li>
+				
+			<h3>Top User</h3>
+			<ul>
+				<li style="color:lightgray;"> >db.buffalogrove.aggregate([{"$group": {"_id":"$created.user", 
+                    "count":{"$sum":1}}}, 
+        {"$sort":{"count": -1}}, 
+        {"$limit":1}]) </li>
+				<li> </li>
+			</ul>
+		 	
+		</div>
+		
+		<div>
+			<h1> Other Ideas about the dataset </h1>
+			<!-- Other ideas about the datasets
+				Student is able to analyze the dataset and recognize opportunities for using it in other projects
+				Guidelines:
+				Student proposes one or more additional ways of improving the data. -->
+			<p> This dataset is incredibly rich but erratic, due no doubt to the volunteer-based updating method. Some places include raw data like founding_date, but many others do not contain full addresses. Here are some statistics on nodes with addresses:</p>
+			
+			<ul>
+				<li>Number of documents with an "address" field: 1779, or around 0.55% of documents</li>
+				<li>Number of documents with an address containing a street: 500, or approximately 28% of all documents with an address field</li>
+				<li>Number of documents with an address containing both a street and a house number: 358, 20% of all documents with addresses, and 0.11% of all entries</li>
+			</ul>
+				
+				
+			<p> In less-travelled areas or areas with potentially less awareness of the OpenStreetMap service, like my selected area, the data editing experience can vary widely - some areas might be very nearly uncharted territory, whereas others might be mostly filled out, with the occasional error. One way to help users prioritize and edit more efficiently might be to display any incomplete addresses within a given radius of the latitude/longitude points selected on the map. Someone looking at "East Main Street", for example, would then be shown all the amenities or other locations geographically near East Main Street that lack a street name in their address.</p>
+		</div>
+		<div>
+			<h2> Other Queries</h2>
+			
+			<h3>Number of schools</h3>
+			<ul>
+				<li style="color:lightgray;"> > db.buffalogrove.find({"amenity":"school"}).count()</li>
+				<li>182</li>
+			</ul>
+			<h3>Township, partly or completely represented on map, with the highest population:</h3>
+			<ul>
+				<li style="color:lightgray;"> >db.buffalogrove.aggregate([{'$match': {'population':{'$exists': 1}}},
+        {'$group': {'_id': '$name', 
+                    'total': {'$sum': '$population'}}},
+        {'$sort': {'total': -1}},
+        {'$limit':1}]) </li>
+				<li>{'total': 76031, '_id': 'Arlington Heights'} </li>
+			</ul>
+			<h3>Total population of all townships, part or completely represented by map area:</h3>
+			<ul>
+				<li style="color:lightgray;"> > db.buffalogrove.aggregate([{'$match': {'population':{'$exists': 1}}},
+        {'$group': {'_id': '$name',
+                    'total': {'$sum': '$population'}}},
+        {'$group': {'_id': 'Total',
+                    'totalpop': {'$sum': '$total'}}},]) </li>
+				<li> 419667</li>
+			</ul>
+			
+			
+		</div>
+		<div>
+			<h1>Conclusion</h1>
+			<p>After reviewing the data, it is clear that my selected area is incomplete. The existing data, however, has been standardized and cleaned appropriately for the purposes of this exercise. I think it would be an interesting future project to compare smaller, more suburban or rurual areas to urban ones in terms of which types of locations get added, and geographical bounds of where the fewest addresses are recorded.</p>
+		
+	</body>
+</html>
