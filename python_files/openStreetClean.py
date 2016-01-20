@@ -290,21 +290,15 @@ def fix_name(name, mapping):
     return name
 
 def fix_num(num):
-    num = num.replace("(", "").replace(")", "").replace('-', '.').replace('+', '').replace(' ', '.')
+    m = phone_type_re.search(num)
+    if m:
+        num = num.replace("(", "").replace(")", "").replace('-', '.').replace('+', '').replace(' ', '.')
     
-    return num
-        
-# names, amenities, phonenums = audit(MAPFILE)
-
-# for num_type, ways in phonenums.items():
-#         for digit in ways:
-#             better_digit = fix_num(digit)
-#             if better_digit != digit:
-#                 print(digit, "=>", better_digit,)
+        return num
+    else:
+        pass
 
 ##6.6
-
-
 CREATED = ['version', 'changeset', 'timestamp', 'user', 'uid'] #values to be put into nested "created" dictionary
 ADDRESS = ['addr:housenumber', 'addr:postcode', 'addr:street'] #values to be put into nested "address" dictionary
    

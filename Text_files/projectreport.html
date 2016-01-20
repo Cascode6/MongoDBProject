@@ -5,6 +5,10 @@
 	</head>
 	
 	<body>
+        
+        <div>
+            <h1>Buffalo Grove</h1>
+            <p>The map area I chose to analyze consists of some suburban townships northwest of Chicago, mainly Buffalo Grove, IL, and parts of surrounding townships. I chose this data because it represents the bounds of where I currently live and work.</p>
 		<!-- Student submission is long enough to thoroughly answer the questions asked without giving unnecessary detail.
 			A good general guideline is that your question responses should take about 3-6 pages. -->
 		<div>
@@ -151,7 +155,11 @@
 		</div>
 		<div>
 			<h1>Conclusion</h1>
-			<p>After reviewing the data, it is clear that my selected area is incomplete. The existing data, however, has been standardized and cleaned appropriately for the purposes of this exercise. I think it would be an interesting future project to compare smaller, more suburban or rurual areas to urban ones in terms of which types of locations get added, and geographical bounds of where the fewest addresses are recorded.</p>
-		
+			<p>After reviewing the data, it is clear that my selected area is incomplete. The existing data, however, has been standardized and cleaned appropriately for the purposes of this exercise. I think it would be an interesting future project to compare smaller, more suburban or rurual areas to urban ones in terms of which types of locations get added, and geographical bounds of where the fewest addresses are recorded - and maybe marketed to the more adventurous map updaters, as a sort of scavenger hunt or urban explorers game.</p>
+            <p>Such an improvement would put to good use the plethora of bot-updated coordinate points I noticed in this data set. This improvement might be accomplished by integrating it as a feature on their existing mobile app, or b developing a new one dedicated to map address/location validation. This app could utilize a geospatial index to return records that are at points near the user's geographic location, but that have missing datafields like street name, or have only been verified once, or highlighting inappropriate tags like closed locations or personal entries ("My home" was a node name in my dataset) for more stringent programmatic cleaning. After a sufficiently detailed standard of map node information is developed, checking which fields are not filled out would be simple.</p>
+            <p>A challenge with this would be, on mobile client especially, returning enough incomplete nearby records to be useful, but not so many that it overtaxes the bandwidth connection. This model would also need a more tailored approach for creating new location records - say, you're on a street and a Walgreens has been built since that street's last check-in. Programmatically it would be possible to predict some address fields given other entries on the same street - if the user verifies that they're on Main and chooses to enter a new location, 'Main' could be the suggested street, and the address number could increment or attempt to discern the house number pattern for that street - but that would depend entirely on how much data had been entered near the user so far.</p>
+            <p>Another challenge would be making sure that all records listed within a certain geospatial area actually are within those geospatial bounds. For entries with at least one address field filled out, it is possible to perform some programmatic checks; for example, does the postal code 60047 actually contain the given geospacial reference point? Unfortunately, with the data as is, these sorts of checks would not be reliable - too much of this information is not present. One solution would be formatting to a more standard and nested system of nodes and ways, with outside nodes containing verified geospatial information - such as, Illinois with boundary tags would also contain the names and boundary tags of all zip codes or counties in Illinois, which would in turn contain all their location nodes. Then, programmatically, you could check with the parent tag of any location node for sanity checks on locations and addresses.</p>
+            <p>Another option would be to develop a setting that would ping users after certain intervals of distance movement or time, and ask them questions like "What zip code are you in?" and "What street are you on?" This could essentially crowd source a verification of "container" information - county, city, state, zip code - and could be used to set the most accurate answers based on frequency of same or similar responses. In any case, i feel it would be a valuable improvement to attempt to maximize the editing human users can do in minimal amounts of time.</p>
+            
 	</body>
 </html>
